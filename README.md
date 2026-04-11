@@ -11,7 +11,7 @@ CLI prose analysis for developers and technical writers.
 ## Install
 
 ```bash
-pip install pith-cli
+pip install git+https://github.com/rick-does/pith.git
 ```
 
 Then download the spaCy language model (required for `pth check`):
