@@ -101,6 +101,6 @@ pth batch ./docs --output json
 
 ---
 
-## Part of PiTH
+## `pth` is Part of PiTH
 
-`pth` is the CLI component of **PiTH** -- a markdown development environment. Fully local. No hosted backend.
+**PiTH** is a markdown development environment. `pth` is its CLI. Fully local. No hosted backend.
