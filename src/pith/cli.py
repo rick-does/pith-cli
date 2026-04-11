@@ -1,7 +1,14 @@
+import sys
+import io
 import typer
 from pathlib import Path
 from typing import Optional
 from enum import Enum
+
+# Force UTF-8 output on Windows to avoid CP1252 encoding errors
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 app = typer.Typer(
     name="pth",
@@ -29,10 +36,11 @@ def _load_last() -> Optional[Path]:
     return None
 
 
-def _resolve_file(file: Optional[Path]) -> Path:
+def _resolve_file(file: Optional[str]) -> Path:
     if file is not None:
-        _save_last(file)
-        return file
+        p = Path(file)
+        _save_last(p)
+        return p
     last = _load_last()
     if last is None:
         typer.echo("No file specified and no previous file found. Pass a filename.")
@@ -43,7 +51,7 @@ def _resolve_file(file: Optional[Path]) -> Path:
 
 @app.command("scan")
 def cmd_scan(
-    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """5-second triage: what is this file, what's its shape, any obvious red flags."""
@@ -53,7 +61,7 @@ def cmd_scan(
 
 @app.command("stats")
 def cmd_stats(
-    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """Quantitative metrics: word count, readability scores, sentence stats."""
@@ -63,7 +71,7 @@ def cmd_stats(
 
 @app.command("structure")
 def cmd_structure(
-    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
     depth: Optional[int] = typer.Option(None, "--depth", help="Max heading depth to show"),
 ):
@@ -74,7 +82,7 @@ def cmd_structure(
 
 @app.command("check")
 def cmd_check(
-    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """Quality pass: passive voice, long sentences, style issues."""
@@ -84,18 +92,18 @@ def cmd_check(
 
 @app.command("compare")
 def cmd_compare(
-    file1: Path = typer.Argument(..., exists=True, readable=True, help="First (before) file"),
-    file2: Path = typer.Argument(..., exists=True, readable=True, help="Second (after) file"),
+    file1: str = typer.Argument(..., help="First (before) file"),
+    file2: str = typer.Argument(..., help="Second (after) file"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """Structural diff: what sections were added, removed, or restructured."""
     from .commands.compare import run
-    run(file1, file2, output=output.value)
+    run(Path(file1), Path(file2), output=output.value)
 
 
 @app.command("lint")
 def cmd_lint(
-    file: Optional[Path] = typer.Argument(None, help="File to lint (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to lint (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
     quiet: bool = typer.Option(False, "--quiet", "-q", help="No output, just exit code (for CI)"),
 ):
@@ -106,18 +114,18 @@ def cmd_lint(
 
 @app.command("batch")
 def cmd_batch(
-    directory: Path = typer.Argument(..., exists=True, file_okay=False, help="Directory to analyze"),
+    directory: str = typer.Argument(..., help="Directory to analyze"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
     pattern: Optional[str] = typer.Option(None, "--pattern", help="Glob pattern (default: **/*.md)"),
 ):
     """Aggregate analysis across all files in a directory."""
     from .commands.batch import run
-    run(directory, output=output.value, pattern=pattern)
+    run(Path(directory), output=output.value, pattern=pattern)
 
 
 @app.command("extract")
 def cmd_extract(
-    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
+    file: Optional[str] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.json, "--output", "-o", help="Output format"),
 ):
     """Pull structured elements: headings, links, code blocks, images."""

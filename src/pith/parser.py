@@ -127,7 +127,7 @@ def _parse_pdf(path: Path) -> ParsedDocument:
             "Install it: pip install pymupdf"
         )
 
-    pdf = fitz.open(str(path))
+    pdf = fitz.open(str(path.resolve()))
     lines: list[str] = []
     links: list[Link] = []
     images: list[Image] = []
