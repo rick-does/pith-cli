@@ -2,11 +2,9 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Optional
-from rich.console import Console
 from rich.tree import Tree
 from .. import parser
-
-console = Console()
+from ..output import get_console
 
 
 def run(file: Path, output: str = "text", depth: Optional[int] = None) -> None:
@@ -67,10 +65,10 @@ def _find_issues(headings: list) -> list[str]:
 
 
 def _print_text(data: dict, headings: list) -> None:
-    console.print(f"\n[bold]Structure:[/bold] {data['file']}\n")
+    get_console().print(f"\n[bold]Structure:[/bold] {data['file']}\n")
 
     if not headings:
-        console.print("[yellow]No headings found.[/yellow]\n")
+        get_console().print("[yellow]No headings found.[/yellow]\n")
         return
 
     tree = Tree(f"[bold]{data['file']}[/bold]")
@@ -87,11 +85,11 @@ def _print_text(data: dict, headings: list) -> None:
         node = stack[-1][1].add(label)
         stack.append((level, node))
 
-    console.print(tree)
-    console.print()
+    get_console().print(tree)
+    get_console().print()
 
     if data["issues"]:
-        console.print("[bold yellow]Issues:[/bold yellow]")
+        get_console().print("[bold yellow]Issues:[/bold yellow]")
         for issue in data["issues"]:
-            console.print(f"  [yellow]![/yellow] {issue}")
-        console.print()
+            get_console().print(f"  [yellow]![/yellow] {issue}")
+        get_console().print()

@@ -1,11 +1,9 @@
 from __future__ import annotations
 import json
 from pathlib import Path
-from rich.console import Console
 from rich.table import Table
 from .. import parser
-
-console = Console()
+from ..output import get_console
 
 
 def run(file: Path, output: str = "json") -> None:
@@ -29,7 +27,7 @@ def run(file: Path, output: str = "json") -> None:
 
 
 def _print_text(data: dict) -> None:
-    console.print(f"\n[bold]Extract:[/bold] {data['file']}\n")
+    get_console().print(f"\n[bold]Extract:[/bold] {data['file']}\n")
 
     if data["headings"]:
         t = Table(title="Headings", header_style="bold")
@@ -38,8 +36,8 @@ def _print_text(data: dict) -> None:
         t.add_column("Line", justify="right")
         for h in data["headings"]:
             t.add_row(f"H{h['level']}", h["text"], str(h["line"]))
-        console.print(t)
-        console.print()
+        get_console().print(t)
+        get_console().print()
 
     if data["links"]:
         t = Table(title="Links", header_style="bold")
@@ -48,8 +46,8 @@ def _print_text(data: dict) -> None:
         t.add_column("Line", justify="right")
         for lnk in data["links"]:
             t.add_row(lnk["text"] or "[dim]--[/dim]", lnk["url"], str(lnk["line"]))
-        console.print(t)
-        console.print()
+        get_console().print(t)
+        get_console().print()
 
     if data["code_blocks"]:
         t = Table(title="Code Blocks", header_style="bold")
@@ -58,8 +56,8 @@ def _print_text(data: dict) -> None:
         t.add_column("At line", justify="right")
         for cb in data["code_blocks"]:
             t.add_row(cb["language"] or "[dim]none[/dim]", str(cb["lines"]), str(cb["line"]))
-        console.print(t)
-        console.print()
+        get_console().print(t)
+        get_console().print()
 
     if data["images"]:
         t = Table(title="Images", header_style="bold")
@@ -68,5 +66,5 @@ def _print_text(data: dict) -> None:
         t.add_column("Line", justify="right")
         for img in data["images"]:
             t.add_row(img["alt"] or "[dim]no alt[/dim]", img["url"], str(img["line"]))
-        console.print(t)
-        console.print()
+        get_console().print(t)
+        get_console().print()

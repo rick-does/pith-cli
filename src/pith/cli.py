@@ -1,15 +1,7 @@
-import sys
 import typer
 from pathlib import Path
 from typing import Optional
 from enum import Enum
-
-# Force UTF-8 output on Windows to avoid CP1252 encoding errors.
-# reconfigure() modifies the stream in-place so existing references (e.g. rich Console) pick it up.
-if hasattr(sys.stdout, "reconfigure"):
-    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-if hasattr(sys.stderr, "reconfigure"):
-    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 app = typer.Typer(
     name="pth",

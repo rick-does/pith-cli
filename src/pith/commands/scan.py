@@ -2,12 +2,10 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import textstat
-from rich.console import Console
 from rich.table import Table
 from .. import parser
+from ..output import get_console
 from .stats import strip_markdown
-
-console = Console()
 
 
 def run(file: Path, output: str = "text") -> None:
@@ -77,9 +75,9 @@ def _check_flags(doc, word_count: int) -> list[str]:
 
 
 def _print_text(data: dict) -> None:
-    console.print(f"\n[bold]Scan:[/bold] {data['file']}\n")
-    console.print(f"  [dim]Type:[/dim]  {data['document_type']}")
-    console.print(f"  [dim]Size:[/dim]  {data['size_bytes']:,} bytes\n")
+    get_console().print(f"\n[bold]Scan:[/bold] {data['file']}\n")
+    get_console().print(f"  [dim]Type:[/dim]  {data['document_type']}")
+    get_console().print(f"  [dim]Size:[/dim]  {data['size_bytes']:,} bytes\n")
 
     t = Table(show_header=False, box=None, padding=(0, 2))
     t.add_column("", style="dim")
@@ -90,13 +88,13 @@ def _print_text(data: dict) -> None:
     t.add_row("Links", str(data["link_count"]))
     t.add_row("Code blocks", str(data["code_block_count"]))
     t.add_row("Images", str(data["image_count"]))
-    console.print(t)
-    console.print()
+    get_console().print(t)
+    get_console().print()
 
     if data["flags"]:
-        console.print("[bold yellow]Flags:[/bold yellow]")
+        get_console().print("[bold yellow]Flags:[/bold yellow]")
         for flag in data["flags"]:
-            console.print(f"  [yellow]![/yellow] {flag}")
+            get_console().print(f"  [yellow]![/yellow] {flag}")
     else:
-        console.print("[green]No flags.[/green]")
-    console.print()
+        get_console().print("[green]No flags.[/green]")
+    get_console().print()

@@ -1,10 +1,8 @@
 from __future__ import annotations
 import json
 from pathlib import Path
-from rich.console import Console
+from ..output import get_console
 from .stats import strip_markdown
-
-console = Console()
 
 LONG_SENTENCE_THRESHOLD = 35
 VERY_LONG_SENTENCE_THRESHOLD = 50
@@ -14,16 +12,16 @@ def run(file: Path, output: str = "text") -> None:
     try:
         import spacy
     except ImportError:
-        console.print("[red]spaCy is required for pth check.[/red]")
-        console.print("  pip install spacy")
-        console.print("  python -m spacy download en_core_web_sm")
+        get_console().print("[red]spaCy is required for pth check.[/red]")
+        get_console().print("  pip install spacy")
+        get_console().print("  python -m spacy download en_core_web_sm")
         raise SystemExit(1)
 
     try:
         nlp = spacy.load("en_core_web_sm")
     except OSError:
-        console.print("[red]spaCy model not found.[/red]")
-        console.print("  python -m spacy download en_core_web_sm")
+        get_console().print("[red]spaCy model not found.[/red]")
+        get_console().print("  python -m spacy download en_core_web_sm")
         raise SystemExit(1)
 
     from .. import parser as _parser
@@ -85,17 +83,17 @@ def _truncate(text: str, limit: int = 100) -> str:
 
 
 def _print_text(data: dict) -> None:
-    console.print(f"\n[bold]Check:[/bold] {data['file']}\n")
+    get_console().print(f"\n[bold]Check:[/bold] {data['file']}\n")
 
     if not data["issues"]:
-        console.print("[green]No issues found.[/green]\n")
+        get_console().print("[green]No issues found.[/green]\n")
         return
 
-    console.print(f"Found [bold]{data['issue_count']}[/bold] issue(s)\n")
+    get_console().print(f"Found [bold]{data['issue_count']}[/bold] issue(s)\n")
 
     for issue in data["issues"]:
         icon = "[yellow]![/yellow]" if issue["severity"] == "warning" else "[blue]i[/blue]"
         label = issue["type"].replace("_", " ").title()
-        console.print(f"  {icon} [bold]{label}[/bold] -- {issue['detail']}")
-        console.print(f"    [dim]{issue['sentence']}[/dim]")
-        console.print()
+        get_console().print(f"  {icon} [bold]{label}[/bold] -- {issue['detail']}")
+        get_console().print(f"    [dim]{issue['sentence']}[/dim]")
+        get_console().print()

@@ -2,11 +2,9 @@ from __future__ import annotations
 import json
 import difflib
 from pathlib import Path
-from rich.console import Console
 from rich.table import Table
 from .. import parser
-
-console = Console()
+from ..output import get_console
 
 
 def run(file1: Path, file2: Path, output: str = "text") -> None:
@@ -91,12 +89,12 @@ def _diff_structure(sections1: dict, sections2: dict) -> list[dict]:
 
 
 def _print_text(data: dict) -> None:
-    console.print(f"\n[bold]Compare:[/bold]")
-    console.print(f"  [dim]Before:[/dim] {data['file1']}")
-    console.print(f"  [dim]After:[/dim]  {data['file2']}\n")
+    get_console().print(f"\n[bold]Compare:[/bold]")
+    get_console().print(f"  [dim]Before:[/dim] {data['file1']}")
+    get_console().print(f"  [dim]After:[/dim]  {data['file2']}\n")
 
     s = data["summary"]
-    console.print(
+    get_console().print(
         f"  {s['headings_before']} -> {s['headings_after']} headings  |  "
         f"[green]+{s['sections_added']} added[/green]  "
         f"[red]-{s['sections_removed']} removed[/red]  "
@@ -106,7 +104,7 @@ def _print_text(data: dict) -> None:
 
     visible = [c for c in data["changes"] if c["status"] != "unchanged"]
     if not visible:
-        console.print("[green]No structural changes.[/green]\n")
+        get_console().print("[green]No structural changes.[/green]\n")
         return
 
     t = Table(header_style="bold")
@@ -128,5 +126,5 @@ def _print_text(data: dict) -> None:
             f"{change['similarity']:.0%}" if change["status"] == "changed" else "--",
         )
 
-    console.print(t)
-    console.print()
+    get_console().print(t)
+    get_console().print()

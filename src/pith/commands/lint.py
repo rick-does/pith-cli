@@ -2,12 +2,10 @@ from __future__ import annotations
 import json
 import sys
 from pathlib import Path
-from rich.console import Console
 from .. import parser
+from ..output import get_console
 from .stats import strip_markdown
 from .structure import _find_issues as structure_issues
-
-console = Console()
 
 LONG_SENTENCE_THRESHOLD = 35
 
@@ -66,9 +64,9 @@ def run(file: Path, output: str = "text", quiet: bool = False) -> None:
 
 def _print_text(file: Path, issues: list[dict]) -> None:
     if not issues:
-        console.print(f"[green]OK[/green]  {file}")
+        get_console().print(f"[green]OK[/green]  {file}")
         return
 
-    console.print(f"[red]FAIL[/red]  {file}  ({len(issues)} issue(s))")
+    get_console().print(f"[red]FAIL[/red]  {file}  ({len(issues)} issue(s))")
     for issue in issues:
-        console.print(f"  ! {issue['detail']}")
+        get_console().print(f"  ! {issue['detail']}")

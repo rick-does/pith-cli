@@ -3,13 +3,11 @@ import json
 from pathlib import Path
 from typing import Optional
 import textstat
-from rich.console import Console
 from rich.table import Table
 from .. import parser
+from ..output import get_console
 from .stats import strip_markdown
 from .structure import _find_issues as structure_issues
-
-console = Console()
 
 EXTENSIONS = {".md", ".txt", ".rst", ".pdf"}
 
@@ -22,7 +20,7 @@ def run(directory: Path, output: str = "text", pattern: Optional[str] = None) ->
     )
 
     if not files:
-        console.print(f"[yellow]No markdown/text files found in {directory}[/yellow]")
+        get_console().print(f"[yellow]No markdown/text files found in {directory}[/yellow]")
         return
 
     results = [_analyze(f) for f in files]
@@ -88,8 +86,8 @@ def _aggregate(results: list[dict]) -> dict:
 
 def _print_text(data: dict) -> None:
     agg = data["aggregate"]
-    console.print(f"\n[bold]Batch:[/bold] {data['directory']}\n")
-    console.print(f"  {data['file_count']} files  |  {agg['total_words']:,} total words  |  "
+    get_console().print(f"\n[bold]Batch:[/bold] {data['directory']}\n")
+    get_console().print(f"  {data['file_count']} files  |  {agg['total_words']:,} total words  |  "
                   f"{agg['total_structure_issues']} structure issue(s)\n")
 
     summary = Table(show_header=False, box=None, padding=(0, 2))
@@ -99,8 +97,8 @@ def _print_text(data: dict) -> None:
     summary.add_row("Avg Flesch-Kincaid Grade", str(agg["avg_flesch_kincaid_grade"]))
     summary.add_row("Most complex file", Path(agg["most_complex_file"]).name)
     summary.add_row("Largest file", Path(agg["largest_file"]).name)
-    console.print(summary)
-    console.print()
+    get_console().print(summary)
+    get_console().print()
 
     t = Table(header_style="bold")
     t.add_column("File")
@@ -123,5 +121,5 @@ def _print_text(data: dict) -> None:
             issues_str,
         )
 
-    console.print(t)
-    console.print()
+    get_console().print(t)
+    get_console().print()

@@ -3,10 +3,8 @@ import json
 import re
 from pathlib import Path
 import textstat
-from rich.console import Console
 from rich.table import Table
-
-console = Console()
+from ..output import get_console
 
 
 def run(file: Path, output: str = "text") -> None:
@@ -58,7 +56,7 @@ def strip_markdown(text: str) -> str:
 
 
 def _print_text(data: dict) -> None:
-    console.print(f"\n[bold]Stats:[/bold] {data['file']}\n")
+    get_console().print(f"\n[bold]Stats:[/bold] {data['file']}\n")
 
     counts = Table(show_header=False, box=None, padding=(0, 2))
     counts.add_column("Metric", style="dim")
@@ -68,8 +66,8 @@ def _print_text(data: dict) -> None:
     counts.add_row("Paragraphs", str(data["paragraph_count"]))
     counts.add_row("Avg sentence length", f"{data['avg_sentence_length']:.1f} words")
     counts.add_row("Avg syllables/word", f"{data['avg_syllables_per_word']:.2f}")
-    console.print(counts)
-    console.print()
+    get_console().print(counts)
+    get_console().print()
 
     scores = Table(title="Readability Scores", header_style="bold")
     scores.add_column("Score")
@@ -82,8 +80,8 @@ def _print_text(data: dict) -> None:
     scores.add_row("Gunning Fog", f"{data['gunning_fog']:.1f}", "Years of education needed")
     scores.add_row("Automated Readability", f"{data['automated_readability_index']:.1f}", "US grade level")
     scores.add_row("Coleman-Liau", f"{data['coleman_liau_index']:.1f}", "US grade level")
-    console.print(scores)
-    console.print()
+    get_console().print(scores)
+    get_console().print()
 
 
 def _flesch_label(score: float) -> str:
