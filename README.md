@@ -1,6 +1,6 @@
 # pith
 
-[![CI](https://github.com/rick-does/pith/actions/workflows/ci.yml/badge.svg)](https://github.com/rick-does/pith/actions/workflows/ci.yml)
+[![CI](https://github.com/rick-does/pith/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rick-does/pith/actions/workflows/ci.yml)
 
 CLI prose analysis for developers and technical writers.
 
