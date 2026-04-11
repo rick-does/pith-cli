@@ -11,8 +11,7 @@ console = Console()
 
 def run(file: Path, output: str = "text", depth: Optional[int] = None) -> None:
     doc = parser.parse(file)
-    text = file.read_text(encoding="utf-8")
-    lines = text.splitlines()
+    lines = doc.text.splitlines()
 
     filtered = [h for h in doc.headings if depth is None or h.level <= depth]
     sections = _build_sections(filtered, lines)

@@ -11,9 +11,8 @@ console = Console()
 
 
 def run(file: Path, output: str = "text") -> None:
-    text = file.read_text(encoding="utf-8")
     doc = parser.parse(file)
-    plain = strip_markdown(text)
+    plain = strip_markdown(doc.text)
 
     word_count = len(plain.split())
     sentence_count = textstat.sentence_count(plain)

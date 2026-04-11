@@ -10,8 +10,9 @@ console = Console()
 
 
 def run(file: Path, output: str = "text") -> None:
-    text = file.read_text(encoding="utf-8")
-    plain = strip_markdown(text)
+    from .. import parser
+    doc = parser.parse(file)
+    plain = strip_markdown(doc.text)
 
     data = {
         "file": str(file),

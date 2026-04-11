@@ -1,10 +1,13 @@
-"""Shared markdown parsing utilities."""
+"""Shared parsing utilities for markdown and PDF files."""
 from __future__ import annotations
 from dataclasses import dataclass, field
 from pathlib import Path
 from markdown_it import MarkdownIt
 
 _md = MarkdownIt()
+
+PDF_EXTENSIONS = {".pdf"}
+TEXT_EXTENSIONS = {".md", ".txt", ".rst"}
 
 
 @dataclass
@@ -43,9 +46,18 @@ class ParsedDocument:
     links: list[Link] = field(default_factory=list)
     code_blocks: list[CodeBlock] = field(default_factory=list)
     images: list[Image] = field(default_factory=list)
+    is_pdf: bool = False
 
 
 def parse(path: Path) -> ParsedDocument:
+    if path.suffix.lower() in PDF_EXTENSIONS:
+        return _parse_pdf(path)
+    return _parse_markdown(path)
+
+
+# --- Markdown ---
+
+def _parse_markdown(path: Path) -> ParsedDocument:
     text = path.read_text(encoding="utf-8")
     tokens = _md.parse(text)
     doc = ParsedDocument(text=text, tokens=tokens)
@@ -102,3 +114,82 @@ def _extract_code_blocks(tokens: list, doc: ParsedDocument) -> None:
         elif token.type == "code_block":
             line = (token.map[0] + 1) if token.map else 0
             doc.code_blocks.append(CodeBlock(language="", content=token.content, line=line))
+
+
+# --- PDF ---
+
+def _parse_pdf(path: Path) -> ParsedDocument:
+    try:
+        import fitz
+    except ImportError:
+        raise ImportError(
+            "pymupdf is required to read PDF files.\n"
+            "Install it: pip install pymupdf"
+        )
+
+    pdf = fitz.open(str(path))
+    lines: list[str] = []
+    links: list[Link] = []
+    images: list[Image] = []
+
+    # Collect font sizes to identify headings heuristically
+    size_counts: dict[int, int] = {}
+    for page in pdf:
+        for block in page.get_text("dict")["blocks"]:
+            if block["type"] != 0:
+                continue
+            for line in block["lines"]:
+                for span in line["spans"]:
+                    size = round(span["size"])
+                    size_counts[size] = size_counts.get(size, 0) + 1
+
+    # Body size = most frequent; heading sizes = anything meaningfully larger
+    body_size = max(size_counts, key=size_counts.get) if size_counts else 12
+    heading_sizes = sorted(
+        {s for s in size_counts if s > body_size * 1.12},
+        reverse=True,
+    )
+    size_to_level = {s: i + 1 for i, s in enumerate(heading_sizes[:6])}
+
+    headings: list[Heading] = []
+    line_no = 0
+
+    for page_no, page in enumerate(pdf):
+        for block in page.get_text("dict")["blocks"]:
+            if block["type"] != 0:
+                continue
+            for raw_line in block["lines"]:
+                line_no += 1
+                span_text = "".join(s["text"] for s in raw_line["spans"]).strip()
+                if not span_text:
+                    continue
+                lines.append(span_text)
+
+                # Heading detection
+                max_size = max(round(s["size"]) for s in raw_line["spans"])
+                if max_size in size_to_level:
+                    headings.append(Heading(
+                        level=size_to_level[max_size],
+                        text=span_text,
+                        line=line_no,
+                    ))
+
+        # Links from annotations
+        for link in page.get_links():
+            if "uri" in link:
+                links.append(Link(text="", url=link["uri"], line=0))
+
+        # Images
+        for img in page.get_images():
+            images.append(Image(
+                alt="",
+                url=f"[embedded image, page {page_no + 1}]",
+                line=0,
+            ))
+
+    text = "\n".join(lines)
+    doc = ParsedDocument(text=text, tokens=[], is_pdf=True)
+    doc.headings = headings
+    doc.links = links
+    doc.images = images
+    return doc

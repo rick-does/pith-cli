@@ -26,8 +26,9 @@ def run(file: Path, output: str = "text") -> None:
         console.print("  python -m spacy download en_core_web_sm")
         raise SystemExit(1)
 
-    text = file.read_text(encoding="utf-8")
-    plain = strip_markdown(text)
+    from .. import parser as _parser
+    doc = _parser.parse(file)
+    plain = strip_markdown(doc.text)
     doc_nlp = nlp(plain)
 
     issues = []

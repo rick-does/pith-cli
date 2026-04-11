@@ -12,11 +12,8 @@ console = Console()
 def run(file1: Path, file2: Path, output: str = "text") -> None:
     doc1 = parser.parse(file1)
     doc2 = parser.parse(file2)
-    text1 = file1.read_text(encoding="utf-8")
-    text2 = file2.read_text(encoding="utf-8")
-
-    sections1 = _get_sections(doc1, text1)
-    sections2 = _get_sections(doc2, text2)
+    sections1 = _get_sections(doc1, doc1.text)
+    sections2 = _get_sections(doc2, doc2.text)
     changes = _diff_structure(sections1, sections2)
 
     data = {

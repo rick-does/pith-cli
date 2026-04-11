@@ -11,7 +11,7 @@ from .structure import _find_issues as structure_issues
 
 console = Console()
 
-EXTENSIONS = {".md", ".txt", ".rst"}
+EXTENSIONS = {".md", ".txt", ".rst", ".pdf"}
 
 
 def run(directory: Path, output: str = "text", pattern: Optional[str] = None) -> None:
@@ -41,9 +41,8 @@ def run(directory: Path, output: str = "text", pattern: Optional[str] = None) ->
 
 
 def _analyze(file: Path) -> dict:
-    text = file.read_text(encoding="utf-8")
     doc = parser.parse(file)
-    plain = strip_markdown(text)
+    plain = strip_markdown(doc.text)
 
     word_count = len(plain.split())
     sentence_count = textstat.sentence_count(plain) if plain.strip() else 0
