@@ -9,51 +9,77 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 
+_LAST_FILE = Path.home() / ".pth_last"
+
 
 class OutputFormat(str, Enum):
     text = "text"
     json = "json"
 
 
+def _save_last(path: Path) -> None:
+    _LAST_FILE.write_text(str(path.resolve()), encoding="utf-8")
+
+
+def _load_last() -> Optional[Path]:
+    if _LAST_FILE.exists():
+        p = Path(_LAST_FILE.read_text(encoding="utf-8").strip())
+        if p.exists():
+            return p
+    return None
+
+
+def _resolve_file(file: Optional[Path]) -> Path:
+    if file is not None:
+        _save_last(file)
+        return file
+    last = _load_last()
+    if last is None:
+        typer.echo("No file specified and no previous file found. Pass a filename.")
+        raise typer.Exit(1)
+    typer.echo(f"Using last file: {last}")
+    return last
+
+
 @app.command("scan")
 def cmd_scan(
-    file: Path = typer.Argument(..., exists=True, readable=True, help="File to analyze"),
+    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """5-second triage: what is this file, what's its shape, any obvious red flags."""
     from .commands.scan import run
-    run(file, output=output.value)
+    run(_resolve_file(file), output=output.value)
 
 
 @app.command("stats")
 def cmd_stats(
-    file: Path = typer.Argument(..., exists=True, readable=True, help="File to analyze"),
+    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """Quantitative metrics: word count, readability scores, sentence stats."""
     from .commands.stats import run
-    run(file, output=output.value)
+    run(_resolve_file(file), output=output.value)
 
 
 @app.command("structure")
 def cmd_structure(
-    file: Path = typer.Argument(..., exists=True, readable=True, help="File to analyze"),
+    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
     depth: Optional[int] = typer.Option(None, "--depth", help="Max heading depth to show"),
 ):
     """Document skeleton: heading hierarchy, section sizes, depth analysis."""
     from .commands.structure import run
-    run(file, output=output.value, depth=depth)
+    run(_resolve_file(file), output=output.value, depth=depth)
 
 
 @app.command("check")
 def cmd_check(
-    file: Path = typer.Argument(..., exists=True, readable=True, help="File to analyze"),
+    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
 ):
     """Quality pass: passive voice, long sentences, style issues."""
     from .commands.check import run
-    run(file, output=output.value)
+    run(_resolve_file(file), output=output.value)
 
 
 @app.command("compare")
@@ -69,9 +95,9 @@ def cmd_compare(
 
 @app.command("extract")
 def cmd_extract(
-    file: Path = typer.Argument(..., exists=True, readable=True, help="File to analyze"),
+    file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
     output: OutputFormat = typer.Option(OutputFormat.json, "--output", "-o", help="Output format"),
 ):
     """Pull structured elements: headings, links, code blocks, images."""
     from .commands.extract import run
-    run(file, output=output.value)
+    run(_resolve_file(file), output=output.value)
