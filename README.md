@@ -1,5 +1,7 @@
 # pith
 
+[![CI](https://github.com/rick-does/pith/actions/workflows/ci.yml/badge.svg)](https://github.com/rick-does/pith/actions/workflows/ci.yml)
+
 CLI prose analysis for developers and technical writers.
 
 `pth` analyzes text files — READMEs, documentation, markdown — and reports on structure, quality, readability, and style. Fully local, no hosted backend, no API keys required (except for `pth summary`).
