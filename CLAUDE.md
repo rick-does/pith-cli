@@ -6,7 +6,7 @@
 
 PiTH is not for monetizing. If others find it useful, fine.
 
-`pth` is a CLI prose analysis tool for developers and technical writers. It analyzes text files — READMEs, documentation, markdown — and reports on structure, quality, readability, and style. Fully local, pip-installable, no hosted backend.
+`pth` is a CLI prose analysis tool for developers and technical writers. It analyzes text files and PDFs — READMEs, documentation, markdown — and reports on structure, quality, readability, and style. Fully local, pip-installable, no hosted backend.
 
 ---
 
@@ -60,13 +60,18 @@ pth compare <f1> <f2>
 pth extract <file>
 ```
 
-### Additional commands (build after core is solid)
+### Additional commands (implemented)
 
 ```
-pth lint <file>          # quick pass, just problems, no detail
+pth lint <file>          # quick pass, just problems, exit 1 if any found
+pth batch <dir>          # run analysis across a directory
+```
+
+### Additional commands (not yet built)
+
+```
 pth summary <file>       # one-paragraph summary (uses Claude API)
 pth watch <file>         # live re-analysis as you edit
-pth batch <dir>          # run analysis across a directory
 pth report <file>        # full HTML or JSON report
 pth init                 # create a .pth config file for the project
 ```
@@ -91,12 +96,14 @@ pth init                 # create a .pth config file for the project
 
 | Command | Library | Notes |
 |---------|---------|-------|
-| `pth structure`, `pth extract` | `mistune` or `markdown-it-py` | Parses markdown into AST |
+| `pth structure`, `pth extract` | `markdown-it-py` | Parses markdown into AST |
+| All commands | `pymupdf` | PDF parsing; bookmarks used for structure when available, font-size heuristics as fallback |
 | `pth stats` | `textstat` | Readability scores, sentence metrics |
-| `pth check`, `pth lint` | `spaCy` | NLP, passive voice, dependency parsing, agent/action identification |
+| `pth check` | `spaCy` | NLP, passive voice, dependency parsing, agent/action identification |
+| `pth lint` | regex + structure checks | No spaCy — intentionally fast |
 | `pth compare` | `difflib` + structural AST diff | Text diff + structural diff |
-| `pth summary` | Claude API | User provides API key |
-| `pth watch` | `watchdog` | File system watcher |
+| `pth summary` | Claude API | User provides API key (not yet built) |
+| `pth watch` | `watchdog` | File system watcher (not yet built) |
 
 ---
 
