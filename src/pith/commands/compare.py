@@ -100,7 +100,7 @@ def _print_text(data: dict) -> None:
 
     s = data["summary"]
     console.print(
-        f"  {s['headings_before']} → {s['headings_after']} headings  |  "
+        f"  {s['headings_before']} -> {s['headings_after']} headings  |  "
         f"[green]+{s['sections_added']} added[/green]  "
         f"[red]-{s['sections_removed']} removed[/red]  "
         f"[yellow]~{s['sections_changed']} changed[/yellow]  "
@@ -126,9 +126,9 @@ def _print_text(data: dict) -> None:
         t.add_row(
             icons[change["status"]],
             f"{indent}{'#' * change['level']} {change['title']}",
-            str(change["word_count_before"]) if change["word_count_before"] else "—",
-            str(change["word_count_after"]) if change["word_count_after"] else "—",
-            f"{change['similarity']:.0%}" if change["status"] == "changed" else "—",
+            str(change["word_count_before"]) if change["word_count_before"] else "--",
+            str(change["word_count_after"]) if change["word_count_after"] else "--",
+            f"{change['similarity']:.0%}" if change["status"] == "changed" else "--",
         )
 
     console.print(t)

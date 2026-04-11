@@ -47,7 +47,7 @@ def _print_text(data: dict) -> None:
         t.add_column("URL")
         t.add_column("Line", justify="right")
         for lnk in data["links"]:
-            t.add_row(lnk["text"] or "[dim]—[/dim]", lnk["url"], str(lnk["line"]))
+            t.add_row(lnk["text"] or "[dim]--[/dim]", lnk["url"], str(lnk["line"]))
         console.print(t)
         console.print()
 

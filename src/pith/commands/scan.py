@@ -65,7 +65,7 @@ def _check_flags(doc, word_count: int) -> list[str]:
     elif not doc.headings:
         flags.append("No headings found")
     elif doc.headings[0].level != 1:
-        flags.append(f"No H1 — first heading is H{doc.headings[0].level}")
+        flags.append(f"No H1 -- first heading is H{doc.headings[0].level}")
     if word_count < 50:
         flags.append(f"Very short document ({word_count} words)")
     bare_links = [lnk for lnk in doc.links if not lnk.text]

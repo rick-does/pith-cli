@@ -50,7 +50,7 @@ def run(file: Path, output: str = "text") -> None:
                 "type": "very_long_sentence",
                 "severity": "warning",
                 "sentence": _truncate(sent_text),
-                "detail": f"{word_count} words — consider splitting",
+                "detail": f"{word_count} words -- consider splitting",
             })
         elif word_count >= LONG_SENTENCE_THRESHOLD:
             issues.append({
@@ -95,6 +95,6 @@ def _print_text(data: dict) -> None:
     for issue in data["issues"]:
         icon = "[yellow]![/yellow]" if issue["severity"] == "warning" else "[blue]i[/blue]"
         label = issue["type"].replace("_", " ").title()
-        console.print(f"  {icon} [bold]{label}[/bold] — {issue['detail']}")
+        console.print(f"  {icon} [bold]{label}[/bold] -- {issue['detail']}")
         console.print(f"    [dim]{issue['sentence']}[/dim]")
         console.print()
