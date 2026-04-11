@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pith-cli"
+version = "0.1.0"
+description = "CLI prose analysis for developers and technical writers"
+requires-python = ">=3.10"
+dependencies = [
+    "typer[all]>=0.9.0",
+    "markdown-it-py>=3.0.0",
+    "textstat>=0.7.0",
+    "spacy>=3.7.0",
+    "rich>=13.0.0",
+]
+
+[project.scripts]
+pth = "pith.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pith"]
