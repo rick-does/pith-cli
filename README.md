@@ -4,7 +4,7 @@
 
 CLI prose analysis for developers and technical writers.
 
-`pth` analyzes text files -- READMEs, documentation, markdown -- and reports on structure, quality, readability, and style. Fully local, no hosted backend, no API keys required.
+`pth` analyzes text files -- READMEs, documentation, markdown, and PDFs -- and reports on structure, quality, readability, and style. Fully local, no hosted backend, no API keys required.
 
 ---
 
@@ -12,6 +12,12 @@ CLI prose analysis for developers and technical writers.
 
 ```bash
 pip install pith-cli
+```
+
+For PDF support:
+
+```bash
+pip install pymupdf
 ```
 
 For the `pth check` command, you also need a spaCy model:
@@ -41,11 +47,12 @@ pth stats README.md
 ```
 
 ### `pth structure <file>`
-The skeleton. Heading hierarchy, section nesting, section word counts. Like a table of contents with metadata -- how deep does nesting go, are sections balanced, are there orphaned subsections.
+The skeleton. Heading hierarchy, section nesting, section word counts. Like a table of contents with metadata -- how deep does nesting go, are sections balanced, are there orphaned subsections. For PDFs, uses the document's bookmark outline when available; falls back to font-size heuristics.
 
 ```bash
 pth structure README.md
 pth structure README.md --depth 2
+pth structure document.pdf
 ```
 
 ### `pth check <file>`
@@ -79,7 +86,7 @@ pth lint README.md --quiet   # exit code only, no output
 ```
 
 ### `pth batch <dir>`
-Aggregate analysis across all markdown files in a directory. Average readability scores, total word count, per-file breakdown, most complex and largest files.
+Aggregate analysis across a directory. Covers markdown, text, and PDF files. Average readability scores, total word count, per-file breakdown, most complex and largest files.
 
 ```bash
 pth batch ./docs
