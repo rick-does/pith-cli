@@ -151,6 +151,17 @@ def _parse_pdf(path: Path) -> ParsedDocument:
     )
     size_to_level = {s: i + 1 for i, s in enumerate(heading_sizes[:6])}
 
+    # Prefer bookmarks (outline/TOC) over font-size heuristics when available
+    toc = pdf.get_toc(simple=True)  # [[level, title, page], ...]
+    use_bookmarks = len(toc) > 0
+
+    if use_bookmarks:
+        bookmark_headings: list[Heading] = [
+            Heading(level=min(entry[0], 6), text=entry[1], line=entry[2])
+            for entry in toc
+            if entry[1].strip()
+        ]
+
     headings: list[Heading] = []
     line_no = 0
 
@@ -165,14 +176,15 @@ def _parse_pdf(path: Path) -> ParsedDocument:
                     continue
                 lines.append(span_text)
 
-                # Heading detection
-                max_size = max(round(s["size"]) for s in raw_line["spans"])
-                if max_size in size_to_level:
-                    headings.append(Heading(
-                        level=size_to_level[max_size],
-                        text=span_text,
-                        line=line_no,
-                    ))
+                # Font-size heading detection (only used when no bookmarks)
+                if not use_bookmarks:
+                    max_size = max(round(s["size"]) for s in raw_line["spans"])
+                    if max_size in size_to_level:
+                        headings.append(Heading(
+                            level=size_to_level[max_size],
+                            text=span_text,
+                            line=line_no,
+                        ))
 
         # Links from annotations
         for link in page.get_links():
@@ -189,7 +201,7 @@ def _parse_pdf(path: Path) -> ParsedDocument:
 
     text = "\n".join(lines)
     doc = ParsedDocument(text=text, tokens=[], is_pdf=True)
-    doc.headings = headings
+    doc.headings = bookmark_headings if use_bookmarks else headings
     doc.links = links
     doc.images = images
     return doc
