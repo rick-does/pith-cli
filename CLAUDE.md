@@ -2,9 +2,9 @@
 
 ## PiTH — Umbrella Brand
 
-**PiTH** is the umbrella brand for Rick's markdown development environment tools. This repo (`pith`) contains the CLI component (`pth`). md-tree stays in its own repo and may eventually become PiTH 2.0 but no decision made yet.
+**PiTH** is the umbrella brand for a markdown development environment. This repo (`pith`) contains the CLI component (`pth`).
 
-PiTH is not for monetizing. Personal tool. If others find it useful, fine.
+PiTH is not for monetizing. If others find it useful, fine.
 
 `pth` is a CLI prose analysis tool for developers and technical writers. It analyzes text files — READMEs, documentation, markdown — and reports on structure, quality, readability, and style. Fully local, pip-installable, no hosted backend.
 
@@ -16,12 +16,6 @@ PiTH is not for monetizing. Personal tool. If others find it useful, fine.
 - **Package name:** `pith-cli` (on PyPI, to avoid conflict with dormant `pth` package)
 - **Origin:** Derived from "pith" — the essential substance of something. "Pithy" means brief and forceful. Fits a tool that analyzes whether writing gets to the point. Three letters, easy to type, no `ctl` suffix.
 - **PyPI/npm conflicts:** Dormant packages exist for `pth` but are unused. `pth-cli` or `pith-cli` is clean.
-
----
-
-## Portfolio Purpose
-
-Sits at the intersection of Rick's two domains: technical writing and CLI tooling. Shows hiring managers a doc-specialist who builds CLI tools. Not trying to displace vale — built as a portfolio piece with personal utility. Rick would use this on his own writing.
 
 ---
 
@@ -140,6 +134,6 @@ pth init                 # create a .pth config file for the project
 
 ## Notes
 
-- `pth check` is where Rick's Natural Sentence Analysis methodology could live — spaCy identifies grammatical relationships (agent, main verb, dependents), Rick defines what to flag. This is genuinely unique and not covered by vale.
+- `pth check` is where a Natural Sentence Analysis methodology could live — spaCy identifies grammatical relationships (agent, main verb, dependents) to flag structural prose issues. This is genuinely unique and not covered by vale.
 - `--quiet` flag makes `pth lint` useful in CI pipelines — just returns exit code, no output.
 - `pth batch` + `--output json` makes it pipeable into other tools.
