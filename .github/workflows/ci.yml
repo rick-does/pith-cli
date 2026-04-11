@@ -56,3 +56,9 @@ jobs:
 
       - name: pth extract json output
         run: pth extract CLAUDE.md --output json
+
+      - name: pth lint
+        run: pth lint CLAUDE.md || true
+
+      - name: pth batch
+        run: pth batch .
