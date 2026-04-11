@@ -14,13 +14,7 @@ CLI prose analysis for developers and technical writers.
 pip install pith-cli
 ```
 
-For PDF support:
-
-```bash
-pip install pymupdf
-```
-
-For the `pth check` command, you also need a spaCy model:
+Then download the spaCy language model (required for `pth check`):
 
 ```bash
 python -m spacy download en_core_web_sm
