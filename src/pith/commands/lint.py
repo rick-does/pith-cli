@@ -67,6 +67,6 @@ def _print_text(file: Path, issues: list[dict]) -> None:
         get_console().print(f"[green]OK[/green]  {file}")
         return
 
-    get_console().print(f"{file}  ({len(issues)} issue(s))")
+    get_console().print(f"{file}  ({len(issues)} issues)")
     for issue in issues:
         get_console().print(f"  ! {issue['detail']}")
