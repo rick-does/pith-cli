@@ -93,6 +93,28 @@ def cmd_compare(
     run(file1, file2, output=output.value)
 
 
+@app.command("lint")
+def cmd_lint(
+    file: Optional[Path] = typer.Argument(None, help="File to lint (default: last used file)"),
+    output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
+    quiet: bool = typer.Option(False, "--quiet", "-q", help="No output, just exit code (for CI)"),
+):
+    """Quick pass: flags problems only, exits 1 if any found (CI-friendly)."""
+    from .commands.lint import run
+    run(_resolve_file(file), output=output.value, quiet=quiet)
+
+
+@app.command("batch")
+def cmd_batch(
+    directory: Path = typer.Argument(..., exists=True, file_okay=False, help="Directory to analyze"),
+    output: OutputFormat = typer.Option(OutputFormat.text, "--output", "-o", help="Output format"),
+    pattern: Optional[str] = typer.Option(None, "--pattern", help="Glob pattern (default: **/*.md)"),
+):
+    """Aggregate analysis across all files in a directory."""
+    from .commands.batch import run
+    run(directory, output=output.value, pattern=pattern)
+
+
 @app.command("extract")
 def cmd_extract(
     file: Optional[Path] = typer.Argument(None, help="File to analyze (default: last used file)"),
