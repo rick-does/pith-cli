@@ -1,4 +1,4 @@
-# pith
+# pith-cli
 
 [![CI](https://github.com/rick-does/pith/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/rick-does/pith/actions/workflows/ci.yml)
 
